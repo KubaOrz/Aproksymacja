@@ -5,7 +5,8 @@ int
 piv_ge_solver (matrix_t * eqs)
 {
   if (eqs != NULL) {
-    pivot_ge_in_situ_matrix (eqs);
+    gradient(eqs);
+    //pivot_ge_in_situ_matrix (eqs); // zamiana na nasza 
     if (bs_matrix (eqs) == 0) {
       return 0;
     }

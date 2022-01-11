@@ -39,6 +39,8 @@ matrix_t * pivot_ge_matrix( matrix_t *, int *row_per );
 
 void pivot_ge_in_situ_matrix( matrix_t * );
 
+void gradient(matrix_t *); /* metoda gradientow sprzezonych */
+
 matrix_t * symm_pivot_ge_matrix( matrix_t *, int *per );
 
 int *pivot_get_inv_per( matrix_t *, int *row_per );
