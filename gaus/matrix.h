@@ -9,6 +9,13 @@ typedef struct {
     double *e;
 } matrix_t;
 
+//Nasza nowa struktura
+typedef struct {
+    int rn;
+    int cn;
+    double **e;
+}   macierz;
+
 matrix_t * make_matrix( int rn, int cn );
 
 matrix_t * read_matrix( FILE *in );
@@ -44,5 +51,11 @@ void gradient(matrix_t *); /* metoda gradientow sprzezonych */
 matrix_t * symm_pivot_ge_matrix( matrix_t *, int *per );
 
 int *pivot_get_inv_per( matrix_t *, int *row_per );
+
+macierz *pomnoz(macierz A, macierz x);
+
+macierz *transponuj(macierz A);
+
+macierz *odejmij(macierz A,macierz x);
 
 #endif

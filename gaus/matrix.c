@@ -227,3 +227,92 @@ int bs_matrix(matrix_t *a)
   else
     return 1;
 }
+
+
+macierz *pomnoz(macierz A, macierz x) {
+  double n=0;
+  macierz *wynik;
+  wynik = malloc(sizeof *wynik);
+  if(wynik==NULL){
+    return NULL;
+  }
+  wynik->rn = A.rn;
+  wynik->cn = x.cn;
+  wynik->e = malloc(A.rn * sizeof *wynik->e);
+  for (int i = 0; i < A.rn; i++)
+    wynik->e[i] = malloc(x.cn * sizeof *wynik->e[i]);
+  if(wynik->e==NULL)
+    return NULL;
+  for (int i = 0; i <A.rn; i ++) {
+    n=0;
+    for(int j =0; j < A.cn; j++) {
+      for (int k = 0; k < x.cn; k++) {
+        n+=A.e[i][j] * x.e[j][k];
+      }
+      wynik->e[i][j] = n;
+    }
+  }
+  return wynik;
+}
+
+macierz *transponuj(macierz A) {
+  
+  macierz *new;
+  new = malloc(sizeof *new);
+  new->cn = A.rn;
+  new->rn = A.cn;
+  new->e = malloc(new->rn * sizeof *new->e);
+  for (int i = 0; i < new->rn; i++) {
+    new->e[i] = malloc(new->cn * sizeof *new->e[i]);
+  }
+  if (new->e == NULL)
+    return NULL;
+
+  for (int i = 0; i < A.rn; i++) {
+    for (int j = 0; j < A.cn; j++) {
+      //fprintf(stderr, "TOA%lf\n", A.e[j][i]);
+      new->e[j][i] = A.e[i][j];
+      //fprintf(stderr, "TAo%lf", new->e[i][j]);
+    }
+  }
+  return new;
+}
+
+macierz *odejmij(macierz A, macierz x){
+  macierz *wynik=malloc(sizeof *wynik);
+  if(wynik==NULL)
+    return NULL;
+  wynik->rn = A.rn;
+  wynik->cn = A.cn;
+  wynik->e = malloc(wynik->rn * sizeof *wynik->e);
+  if(wynik->e==NULL)
+    return NULL;
+  for (int i = 0; i < wynik->rn; i++)
+    if((wynik->e[i] = malloc(wynik->cn * sizeof *wynik->e[i]))==NULL)
+      return NULL;
+
+  for(int i = 0 ; i<A.rn;i++){
+    for(int j = 0 ;j<A.cn; j++){
+      wynik->e[i][j] = A.e[i][j] - x.e[i][j];
+    }
+  }
+  return wynik;
+}
+
+macierz *dodaj(macierz A, macierz x){
+  macierz *wynik=malloc(sizeof *wynik);
+  if(wynik==NULL)
+    return NULL;
+  wynik->rn = A.rn;
+  wynik->cn = x.cn;
+  wynik->e = malloc(wynik->rn * sizeof *wynik->e);
+  for (int i = 0; i < wynik->rn; i++)
+    if((wynik->e[i] = malloc(wynik->cn * sizeof *wynik->e[i]))==NULL)
+      return NULL;
+  for(int i = 0 ; i<A.rn;i++){
+    for(int j = 0 ;j<A.cn; j++){
+      wynik->e[i][j] = A.e[i][j] + x.e[i][j];
+    }
+  }
+  return wynik;
+}

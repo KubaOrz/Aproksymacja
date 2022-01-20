@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 matrix_t *
 pivot_ge_matrix(matrix_t *a, int *row_per)
@@ -66,25 +67,78 @@ void pivot_ge_in_situ_matrix(matrix_t *c)
   }
 }
 void gradient(matrix_t *eqs){
-    fprintf(stderr, "TU");
-    double **A = malloc( eqs->rn *sizeof *A );
-    double *b = malloc (eqs->rn *sizeof *b);
+    macierz A, x ,r, p ,b;
+    A.rn = eqs -> rn;
+    A.cn = eqs -> cn - 1;
+    A.e = malloc( eqs->rn *sizeof *A.e );
+    b.rn = eqs -> rn;
+    b.cn = 1;
+    b.e = malloc(eqs->rn * sizeof *b.e);
+    //double *b = malloc (eqs->rn *sizeof *b);
+    x.rn = eqs->rn;
+    x.cn = 1;
+    x.e = malloc(x.rn * sizeof *x.e);
+    //double **x = malloc(eqs -> rn * sizeof *x);
+    r.rn = eqs -> rn;
+    r.cn = 1;
+    r.e = malloc(eqs->rn * sizeof *r.e);
+    p.rn = eqs -> rn;
+    p.cn = 1;
+    p.e = malloc(eqs -> rn * sizeof *p.e);
+    //double *wiersz = malloc((eqs->cn-1) *sizeof *wiersz);
+    int k =0;
+    double alfa;
 
-    if(A==NULL || b==NULL)
+    if(A.e==NULL || x.e==NULL || r.e==NULL || p.e ==NULL)
       printf("PAMIEC\n");
-    for(int i=0; i<eqs->cn; i++){
-      if((A[i]= malloc(eqs->cn *sizeof *A[i]))==NULL)
+
+    //memset(x.e, 0, eqs -> rn);
+
+    for(int i=0; i<eqs->rn; i++){
+      if((A.e[i]= malloc(A.cn *sizeof *A.e[i]))==NULL)
+        printf("PAMIEC\n");
+      if((x.e[i]= malloc(x.cn *sizeof *x.e[i]))==NULL)
+        printf("PAMIEC\n");
+      if((r.e[i]= malloc(r.cn *sizeof *r.e[i]))==NULL)
+        printf("PAMIEC\n");
+      if((p.e[i]= malloc(p.cn *sizeof *p.e[i]))==NULL)
+        printf("PAMIEC\n");
+      if((b.e[i]= malloc(b.cn *sizeof *p.e[i]))==NULL)
         printf("PAMIEC\n");
     }
+    
+
+    for (int i = 0; i < x.rn; i++)
+      x.e[i][0] = 0;
 
     int row, col;
 
     for(row = 0; row < eqs->rn; row++){
-      for(col = 0; col < eqs->cn;col++ ){
-          A[row][col] = eqs->e[row * eqs->cn + col];
-          printf("%lf ", A[row][col]);
+      for(col = 0; col < eqs->cn - 1;col++ ){
+          A.e[row][col] = eqs->e[row * eqs->cn + col];
+          printf("%lf ", A.e[row][col]);
       }
+      b.e[row][0] = eqs -> e[row * eqs -> cn + eqs -> cn - 1];
       printf("\n");
+    }
+
+    while(1){ /* kolejne iteracje */
+      //zapisanie residuum
+      /*for (int i = 0; i < eqs -> rn; i++) {
+          r[i] = A[i][eqs->cn] - pomnoz(A, x, i, eqs->cn);
+          p[i] = r[i];
+      }*/
+      r = *odejmij(b, *pomnoz(A, x));
+      p = r;
+      for(int i =0 ; i<r.rn; i++)
+        fprintf(stderr, "%lf ",r.e[i][0]);
+
+    //alfa liczymy
+    for(int i =0 ; i<r.rn; i++)
+        fprintf(stderr, "%lf ",r.e[i][0]);
+    alfa = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(p), *pomnoz(A,p))).e[0][0];
+    printf("ALFA%f\n",alfa);
+    break;
     }
 }
 
