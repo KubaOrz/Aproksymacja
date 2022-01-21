@@ -223,10 +223,18 @@ int bs_matrix(matrix_t *a)
         *(e + r * cn + k) = rhs / *(e + r * cn + r); /* nowa wartość to prawa strona / el. diagonalny */
       }
     }
+    printf("\n");
+    for(int i=0; i<rn*cn;i++){
+      if ( i % cn  == 0)
+        printf("\n");
+    
+      printf("%lf ", e[i]);
+    }
     return 0;
   }
   else
     return 1;
+  
 }
 
 macierz *utworz(int wiersze, int kolumny) {
@@ -245,43 +253,23 @@ macierz *utworz(int wiersze, int kolumny) {
 
 macierz *pomnoz(macierz A, macierz x) {
   double n=0;
-  macierz *wynik;
-  wynik = malloc(sizeof *wynik);
-  if(wynik==NULL){
-    return NULL;
-  }
-  wynik->rn = A.rn;
-  wynik->cn = x.cn;
-  wynik->e = malloc(A.rn * sizeof *wynik->e);
-  for (int i = 0; i < A.rn; i++)
-    wynik->e[i] = malloc(x.cn * sizeof *wynik->e[i]);
-  if(wynik->e==NULL)
-    return NULL;
-  for (int i = 0; i <A.rn; i ++) {
-    n=0;
-    for(int j =0; j < A.cn; j++) {
-      for (int k = 0; k < x.cn; k++) {
-        n+=A.e[i][j] * x.e[j][k];
+  macierz *wynik = utworz(A.rn, x.cn);
+  for (int row = 0; row < A.rn; row++) {
+    n = 0;
+    for (int i = 0; i < x.cn; i++) {
+      for (int j = 0; j < A.cn; j++) {
+        n += A.e[row][j] * x.e[j][i];
       }
-      wynik->e[i][j] = n;
+      wynik->e[row][i] = n;
+      n = 0;
     }
   }
   return wynik;
 }
 
 macierz *transponuj(macierz A) {
-  
   macierz *new;
-  new = malloc(sizeof *new);
-  new->cn = A.rn;
-  new->rn = A.cn;
-  new->e = malloc(new->rn * sizeof *new->e);
-  for (int i = 0; i < new->rn; i++) {
-    new->e[i] = malloc(new->cn * sizeof *new->e[i]);
-  }
-  if (new->e == NULL)
-    return NULL;
-
+  new = utworz(A.cn, A.rn);
   for (int i = 0; i < A.rn; i++) {
     for (int j = 0; j < A.cn; j++) {
       //fprintf(stderr, "TOA%lf\n", A.e[j][i]);
@@ -293,18 +281,7 @@ macierz *transponuj(macierz A) {
 }
 
 macierz *odejmij(macierz A, macierz x){
-  macierz *wynik=malloc(sizeof *wynik);
-  if(wynik==NULL)
-    return NULL;
-  wynik->rn = A.rn;
-  wynik->cn = A.cn;
-  wynik->e = malloc(wynik->rn * sizeof *wynik->e);
-  if(wynik->e==NULL)
-    return NULL;
-  for (int i = 0; i < wynik->rn; i++)
-    if((wynik->e[i] = malloc(wynik->cn * sizeof *wynik->e[i]))==NULL)
-      return NULL;
-
+  macierz *wynik = utworz(A.rn, A.cn);
   for(int i = 0 ; i<A.rn;i++){
     for(int j = 0 ;j<A.cn; j++){
       wynik->e[i][j] = A.e[i][j] - x.e[i][j];
@@ -314,15 +291,7 @@ macierz *odejmij(macierz A, macierz x){
 }
 
 macierz *dodaj(macierz A, macierz x){
-  macierz *wynik=malloc(sizeof *wynik);
-  if(wynik==NULL)
-    return NULL;
-  wynik->rn = A.rn;
-  wynik->cn = x.cn;
-  wynik->e = malloc(wynik->rn * sizeof *wynik->e);
-  for (int i = 0; i < wynik->rn; i++)
-    if((wynik->e[i] = malloc(wynik->cn * sizeof *wynik->e[i]))==NULL)
-      return NULL;
+  macierz *wynik = utworz(A.rn, A.cn);
   for(int i = 0 ; i<A.rn;i++){
     for(int j = 0 ;j<A.cn; j++){
       wynik->e[i][j] = A.e[i][j] + x.e[i][j];
@@ -340,6 +309,18 @@ macierz *pomnoz_przez_liczbe(double n, macierz A) {
   }
   return wynik;
 }
+double min(double a, double b){
+  if(a<b)
+    return a;
+  else
+    return b;
+}
+double max (double a, double b){
+    if(a>b)
+      return a;
+    else  
+      return b;
+}
 
 double wartosc(macierz A) {
   double suma = 0;
@@ -348,5 +329,6 @@ double wartosc(macierz A) {
       suma += A.e[i][j] * A.e[i][j];
     }
   }
+  printf("SUNMA:%lf\n", suma);
   return suma; // Tu powinien być zwracany pierwiastek z sumy
 }

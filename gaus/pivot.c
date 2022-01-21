@@ -131,21 +131,12 @@ void gradient(matrix_t *eqs){
     p = r;
     
 
-    while(1){ /* kolejne iteracje */
-      //zapisanie residuum
-      /*for (int i = 0; i < eqs -> rn; i++) {
-          r[i] = A[i][eqs->cn] - pomnoz(A, x, i, eqs->cn);
-          p[i] = r[i];
-      }*/
+    while(1){
       
-      //for(int i =0 ; i<r.rn; i++)
-        //fprintf(stderr, "%lf ",r.e[i][0]);
-
-      //alfa liczymy
       for(int i =0 ; i<r.rn; i++)
           fprintf(stderr, "%lf ",r.e[i][0]);
+      
       alfa = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(p), *pomnoz(A,p))).e[0][0];
-      printf("ALFA%f\n",alfa);
 
       x = *dodaj(x, *pomnoz_przez_liczbe(alfa, p)); // Krok c) z tego naszego pdfa
 
@@ -153,7 +144,7 @@ void gradient(matrix_t *eqs){
 
       r = *odejmij(r2, *pomnoz_przez_liczbe(alfa, *pomnoz(A, p))); // Krok d)
 
-      if (wartosc(r) < 0.0000000001)
+      if (sqrt(wartosc(r)) < 0.0000000001)
         break;
 
       beta = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(r2), r2)).e[0][0]; // Krok e)
@@ -161,8 +152,15 @@ void gradient(matrix_t *eqs){
       p = *dodaj(r, *pomnoz_przez_liczbe(beta, p)); // Krok f)
 
       k++;
+    }
+    printf("%d\n", k);
 
-      break;
+    for(int i =0; i<x.rn; i++){
+      printf("%lf\n", x.e[i][0]);
+    }
+
+    for(int i=0;i<eqs->rn;i++){
+      eqs->e[i*eqs->cn + eqs->cn-1] = x.e[i][0];
     }
 }
 
