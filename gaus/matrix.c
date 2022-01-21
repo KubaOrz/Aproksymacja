@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+//#include <math.h> Potrzebne do sqrt
 
 matrix_t *
 make_matrix(int rn, int cn)
@@ -228,6 +229,19 @@ int bs_matrix(matrix_t *a)
     return 1;
 }
 
+macierz *utworz(int wiersze, int kolumny) {
+  macierz *mat = malloc(sizeof *mat);
+  if (mat == NULL)
+    return NULL;
+  mat -> rn = wiersze;
+  mat -> cn = kolumny;
+  mat -> e = malloc(wiersze * sizeof *mat -> e);
+  for (int i = 0; i < wiersze; i++) {
+    if ((mat -> e[i] = malloc(kolumny * sizeof *mat -> e[i])) == NULL)
+      return NULL;
+  }
+  return mat;
+}
 
 macierz *pomnoz(macierz A, macierz x) {
   double n=0;
@@ -315,4 +329,24 @@ macierz *dodaj(macierz A, macierz x){
     }
   }
   return wynik;
+}
+
+macierz *pomnoz_przez_liczbe(double n, macierz A) {
+  macierz *wynik = utworz(A.rn, A.cn);
+  for (int i = 0; i < A.rn; i++) {
+    for (int j = 0; j < A.cn; j++) {
+      wynik -> e[i][j] = n * A.e[i][j];
+    }
+  }
+  return wynik;
+}
+
+double wartosc(macierz A) {
+  double suma = 0;
+  for (int i = 0; i < A.rn; i++) {
+    for (int j = 0; j < A.cn; j++) {
+      suma += A.e[i][j] * A.e[i][j];
+    }
+  }
+  return suma; // Tu powinien być zwracany pierwiastek z sumy
 }

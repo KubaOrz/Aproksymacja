@@ -67,7 +67,7 @@ void pivot_ge_in_situ_matrix(matrix_t *c)
   }
 }
 void gradient(matrix_t *eqs){
-    macierz A, x ,r, p ,b;
+    macierz A, x ,r, p ,b, r2;
     A.rn = eqs -> rn;
     A.cn = eqs -> cn - 1;
     A.e = malloc( eqs->rn *sizeof *A.e );
@@ -82,12 +82,16 @@ void gradient(matrix_t *eqs){
     r.rn = eqs -> rn;
     r.cn = 1;
     r.e = malloc(eqs->rn * sizeof *r.e);
+    r2.rn = eqs -> rn;
+    r2.cn = 1;
+    r2.e = malloc(eqs->rn * sizeof *r2.e);
     p.rn = eqs -> rn;
     p.cn = 1;
     p.e = malloc(eqs -> rn * sizeof *p.e);
     //double *wiersz = malloc((eqs->cn-1) *sizeof *wiersz);
     int k =0;
     double alfa;
+    double beta;
 
     if(A.e==NULL || x.e==NULL || r.e==NULL || p.e ==NULL)
       printf("PAMIEC\n");
@@ -122,23 +126,43 @@ void gradient(matrix_t *eqs){
       printf("\n");
     }
 
+    r = *odejmij(b, *pomnoz(A, x)); // To jest początkowe podstawienie i musi być przed pętlą
+    printf("sakndubeiy\n");
+    p = r;
+    
+
     while(1){ /* kolejne iteracje */
       //zapisanie residuum
       /*for (int i = 0; i < eqs -> rn; i++) {
           r[i] = A[i][eqs->cn] - pomnoz(A, x, i, eqs->cn);
           p[i] = r[i];
       }*/
-      r = *odejmij(b, *pomnoz(A, x));
-      p = r;
-      for(int i =0 ; i<r.rn; i++)
-        fprintf(stderr, "%lf ",r.e[i][0]);
+      
+      //for(int i =0 ; i<r.rn; i++)
+        //fprintf(stderr, "%lf ",r.e[i][0]);
 
-    //alfa liczymy
-    for(int i =0 ; i<r.rn; i++)
-        fprintf(stderr, "%lf ",r.e[i][0]);
-    alfa = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(p), *pomnoz(A,p))).e[0][0];
-    printf("ALFA%f\n",alfa);
-    break;
+      //alfa liczymy
+      for(int i =0 ; i<r.rn; i++)
+          fprintf(stderr, "%lf ",r.e[i][0]);
+      alfa = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(p), *pomnoz(A,p))).e[0][0];
+      printf("ALFA%f\n",alfa);
+
+      x = *dodaj(x, *pomnoz_przez_liczbe(alfa, p)); // Krok c) z tego naszego pdfa
+
+      r2 = r; // Kopiuje zawartość r bo później jest potrzebny w postaci przed i po podstawieniu w kroku d)
+
+      r = *odejmij(r2, *pomnoz_przez_liczbe(alfa, *pomnoz(A, p))); // Krok d)
+
+      if (wartosc(r) < 0.0000000001)
+        break;
+
+      beta = (*pomnoz(*transponuj(r), r)).e[0][0] / (*pomnoz(*transponuj(r2), r2)).e[0][0]; // Krok e)
+
+      p = *dodaj(r, *pomnoz_przez_liczbe(beta, p)); // Krok f)
+
+      k++;
+
+      break;
     }
 }
 

@@ -52,10 +52,18 @@ matrix_t * symm_pivot_ge_matrix( matrix_t *, int *per );
 
 int *pivot_get_inv_per( matrix_t *, int *row_per );
 
+macierz *utworz(int wiersze, int kolumny);
+
 macierz *pomnoz(macierz A, macierz x);
 
 macierz *transponuj(macierz A);
 
 macierz *odejmij(macierz A,macierz x);
+
+macierz *dodaj(macierz A,macierz x);
+
+macierz *pomnoz_przez_liczbe(double n, macierz A);
+
+double wartosc(macierz A);
 
 #endif
